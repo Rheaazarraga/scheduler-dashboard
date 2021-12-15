@@ -35,7 +35,27 @@ class Dashboard extends Component {
     focused: null
   };
 
-  //set the value of focused back to null if the value of focused is currently set to a panel
+
+  // lifecycle method to check to see if there is saved focus state after the application is rendered for the first time
+  // when the local storage contains state, the state can be set to match the application
+  componentDidMount() {
+    const focused = JSON.parse(localStorage.getItem("focused"));
+
+    if (focused) {
+      this.setState({ focused });
+    }
+  }
+
+  // lifecycle method to listen for changes to the state, and has access to the props and state from the previous update
+  componentDidUpdate(previousProps, previousState) {
+    // if values of the existing state change, write value to localStorage
+    if(previousState.focused !== this.state.focused) {
+      // JSON.stringify converts values before writing them to the localStorage
+      localStorage.setItem("focused", JSON.stringify(this.state.focused));
+    }
+  }
+
+  // set the value of focused back to null if the value of focused is currently set to a panel
   selectPanel(id) {
     this.setState(previousState => ({
       focused: previousState.focused !== null ? null : id
