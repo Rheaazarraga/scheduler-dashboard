@@ -5,6 +5,8 @@ import classnames from "classnames";
 import Loading from "./Loading";
 import Panel from "./Panel";
 
+import Axios from "axios";
+
 const data = [
   {
     id: 1,
