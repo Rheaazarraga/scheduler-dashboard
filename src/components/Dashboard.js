@@ -14,6 +14,8 @@ import {
   getInterviewsPerDay
 } from "helpers/selectors";
 
+import { setInterview } from "helpers/reducers";
+
 const data = [
   {
     id: 1,
@@ -69,6 +71,26 @@ class Dashboard extends Component {
         interviewers: interviewers.data
       });
     });
+
+    this.socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
+    // event handler converts the string data to JavaScript data types
+    this.socket.onmessage = event => {
+      const data = JSON.parse(event.data);
+
+      // if the data is an object with the correct type, update the state.
+      // use a setInterview helper function to convert the state using the id and interview values
+      if(typeof data === "object" && data.type === "SET_INTERVIEW") {
+        this.setState(previousState =>
+          setInterview(previousState, data.id, data.interview));
+      }
+    };
+
+    
+  }
+
+  componentWillUnmount() {
+    this.socket.close();
   }
 
   // lifecycle method to listen for changes to the state, and has access to the props and state from the previous update
@@ -94,6 +116,7 @@ class Dashboard extends Component {
     });
 
     if (this.state.loading) {
+      console.log("this.state---", this.state);
       return <Loading />;
     }
 
